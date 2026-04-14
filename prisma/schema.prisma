@@ -1,0 +1,676 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite doesn't support enums, using String instead
+// Valid values for role: PATIENT, CAREGIVER, ADMIN
+// Valid values for ObservationType: EGFR, CREATININE, POTASSIUM, SODIUM, PHOSPHORUS, BUN, UACR, OTHER
+// Valid values for AlertSeverity: LOW, MEDIUM, HIGH, CRITICAL
+// Valid values for AlertStatus: ACTIVE, ACKNOWLEDGED, RESOLVED
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  passwordHash  String?
+  role          String    @default("PATIENT")
+  gender              String?   // "MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"
+  notificationsEnabled Boolean   @default(true)
+  createdAt           DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  profile       Profile?
+  consents      Consent[]
+  observations  Observation[]
+  medications   Medication[]
+  bpLogs        BloodPressureLog[]
+  symptomLogs   SymptomLog[]
+  alerts        AlertEvent[]
+  auditLogs     AuditLog[]
+  caregivers    CaregiverLink[]  @relation("PatientCaregivers")
+  patients      CaregiverLink[]  @relation("CaregiverPatients")
+  savedTrials   SavedTrial[]
+
+  // Food Tracker
+  recipes           Recipe[]
+  savedMeals        SavedMeal[]
+  diaryDays         DiaryDay[]
+  nutritionTarget   NutritionTarget?
+  nutritionAlerts   NutritionAlert[]
+
+  // Care Organizer
+  appointments      Appointment[]
+  tasks             Task[]
+
+  // Document Vault
+  documents         Document[]
+  documentAccessLogs DocumentAccessLog[]
+
+  // Imaging
+  imagingEvents     ImagingEvent[]
+
+  // Wellness
+  wellnessLogs      WellnessLog[]
+
+  // Analytics
+  analyticsCache    AnalyticsCache[]
+  weeklySummaries   WeeklySummary[]
+
+  // Sharing
+  shareTokens       ShareToken[]
+}
+
+// ... existing models (Account, Session, VerificationToken, Profile, Consent, Observation, Medication, MedLog, BloodPressureLog, SymptomLog, AlertRule, AlertEvent, AuditLog, CaregiverLink, SavedTrial, FoodItem, Ingredient, Recipe, RecipeIngredient, SavedMeal, SavedMealItem, DiaryDay, DiaryEntry, NutritionTarget, NutritionAlert, ResourceCategory, ResourceEntry, Article, ProviderDirectory) ...
+
+// ─────────────────────────────────────────────────────────────
+// Care Organizer Models
+// ─────────────────────────────────────────────────────────────
+
+model Appointment {
+  id              String                @id @default(uuid())
+  userId          String
+  user            User                  @relation(fields: [userId], references: [id])
+  title           String
+  type            String                // Nephrology, LabDraw, Imaging, PrimaryCare, DialysisConsult, Other
+  startAt         DateTime
+  endAt           DateTime?
+  providerName    String?
+  locationText    String?
+  locationGeo     String?               // JSON lat/lng if needed
+  notes           String?
+  status          String                @default("UPCOMING") // UPCOMING, COMPLETED, CANCELLED
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  
+  reminders       AppointmentReminder[]
+  documents       DocumentLink[]
+  tasks           Task[]
+}
+
+model AppointmentReminder {
+  id              String      @id @default(uuid())
+  appointmentId   String
+  appointment     Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  remindAt        DateTime
+  channel         String      @default("PUSH") // PUSH, EMAIL
+  sentAt          DateTime?
+}
+
+model Task {
+  id                String      @id @default(uuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  title             String
+  dueAt             DateTime?
+  status            String      @default("OPEN") // OPEN, COMPLETED
+  linkedObjectType  String?     // APPOINTMENT, LAB, MEDICATION
+  linkedObjectId    String?
+  appointmentId     String?
+  appointment       Appointment? @relation(fields: [appointmentId], references: [id])
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// Secure Medical Document Vault
+// ─────────────────────────────────────────────────────────────
+
+model Document {
+  id            String          @id @default(uuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+  title         String
+  category      String          // LABS, IMAGING, VISIT_SUMMARY, INSURANCE, PRESCRIPTION, OTHER
+  fileKey       String          // S3/MinIO key
+  mimeType      String
+  sizeBytes     Int
+  docDate       DateTime?
+  checksum      String?
+  aiSummary     String?
+  aiFeedback    String?
+  createdAt     DateTime        @default(now())
+  
+  tags          DocumentTag[]
+  links         DocumentLink[]
+  accessLogs    DocumentAccessLog[]
+}
+
+model DocumentTag {
+  id            String   @id @default(uuid())
+  documentId    String
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag           String
+}
+
+model DocumentLink {
+  id            String   @id @default(uuid())
+  documentId    String
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  objectType    String   // LAB_PANEL, IMAGING_EVENT, APPOINTMENT
+  objectId      String
+  appointmentId String?
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+}
+
+model DocumentAccessLog {
+  id            String   @id @default(uuid())
+  documentId    String
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  action        String   // VIEW, DOWNLOAD, DELETE
+  timestamp     DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────
+// Imaging + Kidney Size + TKV Tracking
+// ─────────────────────────────────────────────────────────────
+
+model ImagingEvent {
+  id            String           @id @default(uuid())
+  userId        String
+  user          User             @relation(fields: [userId], references: [id])
+  type          String           // MRI, ULTRASOUND, CT, OTHER
+  date          DateTime
+  facility      String?
+  notes         String?
+  metrics       ImagingMetric[]
+  createdAt     DateTime         @default(now())
+}
+
+model ImagingMetric {
+  id              String       @id @default(uuid())
+  imagingEventId  String
+  imagingEvent    ImagingEvent @relation(fields: [imagingEventId], references: [id], onDelete: Cascade)
+  metricName      String       // TKV, LEFT_LENGTH, RIGHT_LENGTH
+  value           Float
+  unit            String       // mL, cm, cm3
+}
+
+// ─────────────────────────────────────────────────────────────
+// Wellness: Mood + Activity + Notes
+// ─────────────────────────────────────────────────────────────
+
+model WellnessLog {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  date            DateTime @default(now())
+  mood            Int?     // 1-5
+  energy          Int?     // 1-5
+  stress          Int?     // 1-5
+  sleepHours      Float?
+  activityMinutes Int?
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@unique([userId, date])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Advanced Progression Analytics
+// ─────────────────────────────────────────────────────────────
+
+model AnalyticsCache {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  metric        String   // EGFR, UACR, BP
+  windowDays    Int
+  slope         Float?
+  r2            Float?
+  computedAt    DateTime @default(now())
+}
+
+model WeeklySummary {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  weekStart     DateTime
+  bpAvg         String?  // Systolic/Diastolic
+  egfrLatest    Float?
+  alertsCount   Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, weekStart])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Secure Sharing
+// ─────────────────────────────────────────────────────────────
+
+model ShareToken {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       User     @relation(fields: [patientId], references: [id])
+  token         String   @unique
+  reportId      String?
+  expiresAt     DateTime
+  createdAt     DateTime @default(now())
+}
+
+
+model Account {
+  id                 String  @id @default(uuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Profile {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id])
+  firstName       String?
+  lastName        String?
+  dob             DateTime?
+  gender          String?
+  phone           String?
+  zipCode         String?
+  diagnosisDate   DateTime?
+  ckdStage        String?   // Calculated G1-G5
+  nephrologistName String?
+  nephrologistPhone String?
+
+  // Clinical interpretation fields (Feature 1)
+  sexAtBirth      String?   // "MALE", "FEMALE" – required for eGFR
+  weightKg        Float?
+  heightCm        Float?
+  hasDiabetes     Boolean   @default(false)
+  hasHypertension Boolean   @default(false)
+  profileVersion  Int       @default(1) // bumped on every clinical field change
+  lastCalculationAt DateTime?
+}
+
+model Consent {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  type       String   // e.g., "TERMS_OF_SERVICE", "DATA_PRIVACY"
+  status     Boolean
+  timestamp  DateTime @default(now())
+  ipAddress  String?
+}
+
+model Observation {
+  id                String          @id @default(uuid())
+  userId            String
+  user              User            @relation(fields: [userId], references: [id])
+  type              String
+  value             Float
+  unit              String
+  timestamp         DateTime
+  source            String?         // "MANUAL", "LAB_IMPORT"
+  loincCode         String?
+  referenceRangeLow Float?
+  referenceRangeHigh Float?
+  note              String?
+  createdAt         DateTime        @default(now())
+  // Feature 1 – personalized interpretation
+  isCalculated      Boolean         @default(false) // true if eGFR was auto-calculated
+  profileVersionUsed Int?           // profile version at time of calculation
+}
+
+model Medication {
+  id            String    @id @default(uuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  name          String
+  dosage        String
+  frequency     String    // e.g., "DAILY", "BID"
+  instructions  String?
+  startDate     DateTime
+  endDate       DateTime?
+  isActive      Boolean   @default(true)
+  isTolvaptan   Boolean   @default(false)
+  logs          MedLog[]
+}
+
+model MedLog {
+  id          String    @id @default(uuid())
+  medId       String
+  medication  Medication @relation(fields: [medId], references: [id], onDelete: Cascade)
+  scheduledAt DateTime
+  takenAt     DateTime?
+  status      String    // "TAKEN", "MISSED", "SKIPPED"
+  note        String?
+}
+
+model BloodPressureLog {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  systolic      Int
+  diastolic     Int
+  heartRate     Int?
+  timestamp     DateTime @default(now())
+  note          String?
+}
+
+model SymptomLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // e.g., "PAIN", "FATIGUE", "HEMATURIA"
+  severity    Int      // 1-10
+  details     String?  // JSON or text details
+  timestamp   DateTime @default(now())
+}
+
+model AlertRule {
+  id              String        @id @default(uuid())
+  metric          String        // "POTASSIUM", "EGFR", "BP_SYSTOLIC"
+  condition       String        // "GT", "LT", "RATE_CHANGE"
+  threshold       Float
+  timeframe       Int?          // in days for rate change
+  severity        String
+  active          Boolean       @default(true)
+  description     String?
+}
+
+model AlertEvent {
+  id                  String        @id @default(uuid())
+  userId              String
+  user                User          @relation(fields: [userId], references: [id])
+  ruleId              String?
+  message             String
+  triggeredVal        Float?
+  status              String        @default("ACTIVE")
+  triggeredAt         DateTime      @default(now())
+  resolvedAt          DateTime?
+  // Feature 1 – explainability
+  referenceRangeUsed  String?       // JSON: { low, high, unit }
+  ruleLogic           String?       // Human-readable rule description
+  profileVersionUsed  Int?          // Profile version used for calculation
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  action        String
+  resourceType  String
+  resourceId    String?
+  details       String?
+  ipAddress     String?
+  timestamp     DateTime @default(now())
+}
+
+model CaregiverLink {
+  id            String   @id @default(uuid())
+  patientId     String
+  caregiverId   String
+  patient       User     @relation("CaregiverPatients", fields: [patientId], references: [id])
+  caregiver     User     @relation("PatientCaregivers", fields: [caregiverId], references: [id])
+  status        String   // "PENDING", "ACTIVE"
+  createdAt     DateTime @default(now())
+}
+
+model SavedTrial {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  trialId     String   // External ID
+  title       String
+  status      String
+  savedAt     DateTime @default(now())
+}
+
+// --- Food Tracker Models ---
+
+model FoodItem {
+  id                String   @id @default(uuid())
+  name              String
+  brand             String?
+  barcode           String?  @unique
+  nutrients         String   // JSON string: {calories, protein, sodium, potassium, phosphorus, fluid, fat, carbs}
+  servingSizes      String   // JSON string: [{name, weightG, volumeMl?}]
+  source            String?  // "USDA", "MANUAL", etc.
+  category          String?  // e.g., "Fruits", "Vegetables", "Meats"
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  diaryEntries      DiaryEntry[]
+  savedMealItems    SavedMealItem[]
+}
+
+model Ingredient {
+  id                String   @id @default(uuid())
+  name              String
+  nutrients         String   // JSON string
+  servingSizes      String   // JSON string
+  source            String?
+  category          String?
+  createdAt         DateTime @default(now())
+
+  recipeIngredients RecipeIngredient[]
+}
+
+model Recipe {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  title             String
+  servings          Float    @default(1.0)
+  instructions      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  ingredients       RecipeIngredient[]
+  diaryEntries      DiaryEntry[]
+  savedMealItems    SavedMealItem[]
+}
+
+model RecipeIngredient {
+  id                String     @id @default(uuid())
+  recipeId          String
+  recipe            Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredientId      String
+  ingredient        Ingredient @relation(fields: [ingredientId], references: [id])
+  quantity          Float
+  unit              String
+  gramsEquivalent   Float
+  displayNameOverride String?
+
+  @@index([recipeId])
+  @@index([ingredientId])
+}
+
+model SavedMeal {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  createdAt DateTime @default(now())
+
+  items     SavedMealItem[]
+}
+
+model SavedMealItem {
+  id          String    @id @default(uuid())
+  savedMealId String
+  savedMeal   SavedMeal @relation(fields: [savedMealId], references: [id], onDelete: Cascade)
+  
+  itemType    String    // "FOOD" or "RECIPE"
+  
+  foodItemId  String?
+  foodItem    FoodItem? @relation(fields: [foodItemId], references: [id])
+  
+  recipeId    String?
+  recipe      Recipe?   @relation(fields: [recipeId], references: [id])
+  
+  quantity    Float
+  unit        String
+}
+
+model DiaryDay {
+  id        String   @id @default(uuid())
+  userId    String
+  date      DateTime // Date without time component (stored as ISO date string at midnight)
+  user      User     @relation(fields: [userId], references: [id])
+
+  entries   DiaryEntry[]
+
+  @@unique([userId, date])
+}
+
+model DiaryEntry {
+  id                String   @id @default(uuid())
+  dayId             String
+  day               DiaryDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  mealType          String   // "BREAKFAST", "LUNCH", "DINNER", "SNACKS", "OTHER"
+  
+  itemType          String   // "FOOD" or "RECIPE"
+  
+  foodItemId  String?
+  foodItem    FoodItem? @relation(fields: [foodItemId], references: [id])
+  
+  recipeId    String?
+  recipe      Recipe?   @relation(fields: [recipeId], references: [id])
+  
+  quantity          Float
+  unit              String
+  nutrientsSnapshot String   // JSON string of nutrients at log time
+  checked           Boolean  @default(true)
+  createdAt         DateTime @default(now())
+}
+
+model NutritionTarget {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  sodiumMg     Float?
+  potassiumMg  Float?
+  phosphorusMg Float?
+  proteinG     Float?
+  fluidMl      Float?
+  updatedAt    DateTime @updatedAt
+}
+
+model NutritionAlert {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime
+  nutrient  String   // "SODIUM", "POTASSIUM", "PHOSPHORUS", "PROTEIN", "FLUID"
+  severity  String   // "ON_TRACK", "NEAR_LIMIT", "HIGH"
+  reason    String
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────────────────────
+// Feature 2 – Global PKD Support Resource Database
+// ─────────────────────────────────────────────────────────────
+
+model ResourceCategory {
+  id        String          @id @default(uuid())
+  name      String          @unique // "SUPPORT_GROUP", "EDUCATION", "ADVOCACY"
+  label     String
+  entries   ResourceEntry[]
+}
+
+model ResourceEntry {
+  id           String           @id @default(uuid())
+  categoryId   String
+  category     ResourceCategory @relation(fields: [categoryId], references: [id])
+  name         String
+  summary      String
+  city         String?
+  state        String?
+  country      String
+  continent    String?          // "North America", "Europe", "Asia", "Oceania", etc.
+  lat          Float?           // for distance filtering
+  lng          Float?
+  phone        String?
+  email        String?
+  website      String?
+  isVirtual    Boolean          @default(false)
+  isInPerson   Boolean          @default(true)
+  isPediatric  Boolean          @default(false)
+  isCaregiver  Boolean          @default(false)
+  
+  // New fields for "Directory Filter" UI
+  services     String?          // JSON array of strings
+  eligibility  String?
+  verifiedImpact String?
+  labels       String?          // JSON array of strings (e.g., ["YOUTH PROGRAM"])
+  cost         String?          // e.g., "FREE"
+  
+  createdAt    DateTime         @default(now())
+}
+
+model Article {
+  id          String   @id @default(uuid())
+  title       String
+  summary     String?
+  content     String
+  author      String?
+  sourceUrl   String?
+  links       String?  // JSON array of {label, url}
+  category    String?  // e.g., "PKD_BASICS", "DIET", "RESEARCH"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────
+// Feature 3 – Global Nephrologist & Dialysis Locator
+// ─────────────────────────────────────────────────────────────
+
+model ProviderDirectory {
+  id          String   @id @default(uuid())
+  name        String
+  specialty   String   // "NEPHROLOGIST", "DIALYSIS_CENTER", "TRANSPLANT"
+  address     String
+  city        String?
+  state       String?
+  country     String   @default("USA")
+  phone       String?
+  website     String?
+  lat         Float?
+  lng         Float?
+  source      String?  // "NPI", "MANUAL", "CSV_IMPORT", "SEED"
+  npiNumber   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
