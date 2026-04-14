@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PKD Compass - CKD Education &amp; Stage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto w-full">
+<button class="text-slate-600 dark:text-slate-400 p-1">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">PKD Compass</h1>
+<button class="text-slate-600 dark:text-slate-400 p-1">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</header>
+<main class="flex-1 w-full max-w-md mx-auto pb-24">
+<!-- Current Stage Summary -->
+<section class="p-4">
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">nephrology</span>
+</div>
+<h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-1">Stage G3a, A2</h2>
+<p class="text-primary font-semibold text-lg">Mild to Moderate CKD</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-2">Based on your latest labs: eGFR 48 mL/min &amp; ACR 150 mg/g</p>
+</div>
+</section>
+<!-- Risk Heat Map Grid -->
+<section class="px-4 py-2">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold">Risk Heat Map</h3>
+<span class="text-xs font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">KDIGO Risk Grid</span>
+</div>
+<div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+<div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-center uppercase tracking-wider text-slate-400 mb-1">
+<div></div>
+<div>A1</div>
+<div>A2</div>
+<div>A3</div>
+</div>
+<div class="grid grid-cols-4 gap-1">
+<!-- Row Labels & Grid Cells -->
+<div class="flex items-center justify-center font-bold text-slate-400 text-xs">G1</div>
+<div class="h-12 rounded bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-700 dark:text-emerald-400"><span class="material-symbols-outlined text-xs">check_circle</span></div>
+<div class="h-12 rounded bg-yellow-400/20 border border-yellow-400/30"></div>
+<div class="h-12 rounded bg-orange-500/20 border border-orange-500/30"></div>
+<div class="flex items-center justify-center font-bold text-slate-400 text-xs">G2</div>
+<div class="h-12 rounded bg-emerald-500/20 border border-emerald-500/30"></div>
+<div class="h-12 rounded bg-yellow-400/20 border border-yellow-400/30"></div>
+<div class="h-12 rounded bg-orange-500/20 border border-orange-500/30"></div>
+<div class="flex items-center justify-center font-bold text-slate-400 text-xs">G3a</div>
+<div class="h-12 rounded bg-yellow-400/20 border border-yellow-400/30"></div>
+<!-- ACTIVE CELL -->
+<div class="h-12 rounded bg-orange-500 border-4 border-primary flex items-center justify-center shadow-lg transform scale-105 z-10 relative">
+<span class="material-symbols-outlined text-white">location_on</span>
+</div>
+<div class="h-12 rounded bg-red-500/20 border border-red-500/30"></div>
+<div class="flex items-center justify-center font-bold text-slate-400 text-xs">G3b</div>
+<div class="h-12 rounded bg-orange-500/20 border border-orange-500/30"></div>
+<div class="h-12 rounded bg-red-500/20 border border-red-500/30"></div>
+<div class="h-12 rounded bg-red-600/20 border border-red-600/30"></div>
+<div class="flex items-center justify-center font-bold text-slate-400 text-xs">G4</div>
+<div class="h-12 rounded bg-red-500/20 border border-red-500/30"></div>
+<div class="h-12 rounded bg-red-600/20 border border-red-600/30"></div>
+<div class="h-12 rounded bg-red-700/20 border border-red-700/30"></div>
+<div class="flex items-center justify-center font-bold text-slate-400 text-xs">G5</div>
+<div class="h-12 rounded bg-red-700/20 border border-red-700/30"></div>
+<div class="h-12 rounded bg-red-800/20 border border-red-800/30"></div>
+<div class="h-12 rounded bg-red-900/20 border border-red-900/30"></div>
+</div>
+<div class="mt-4 flex flex-wrap gap-3 justify-center text-[10px] font-medium text-slate-500">
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Low Risk</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-400"></span>Moderately Increased</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-orange-500"></span>High Risk</div>
+<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-600"></span>Very High Risk</div>
+</div>
+</div>
+</section>
+<!-- Educational Sections -->
+<section class="p-4 space-y-4">
+<h3 class="text-lg font-bold">Understand Your Results</h3>
+<!-- G-Stage Definition -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+<div class="p-4 flex items-center justify-between border-b border-slate-50 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-primary">analytics</span>
+</div>
+<div>
+<p class="font-bold">G-Stage (GFR)</p>
+<p class="text-xs text-slate-500">Filtration Performance</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+<div class="p-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    The <strong>Glomerular Filtration Rate (GFR)</strong> measures how well your kidneys filter waste from your blood. 
+                    <ul class="mt-2 space-y-2">
+<li class="flex gap-2"><span class="font-bold text-slate-900 dark:text-white">G1-G2:</span> Normal or mild decrease.</li>
+<li class="flex gap-2"><span class="font-bold text-slate-900 dark:text-white">G3a-G3b:</span> Mild to severe decrease.</li>
+<li class="flex gap-2"><span class="font-bold text-slate-900 dark:text-white">G4-G5:</span> Severe decrease or kidney failure.</li>
+</ul>
+</div>
+</div>
+<!-- A-Stage Definition -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+<div class="p-4 flex items-center justify-between border-b border-slate-50 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/5 rounded-lg">
+<span class="material-symbols-outlined text-primary">opacity</span>
+</div>
+<div>
+<p class="font-bold">A-Stage (Albuminuria)</p>
+<p class="text-xs text-slate-500">Protein Leakage</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+<div class="p-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+<strong>Albuminuria</strong> measures the amount of albumin (protein) in your urine. Higher levels indicate kidney damage.
+                    <ul class="mt-2 space-y-2">
+<li class="flex gap-2"><span class="font-bold text-slate-900 dark:text-white">A1:</span> Normal to mildly increased.</li>
+<li class="flex gap-2"><span class="font-bold text-slate-900 dark:text-white text-primary">A2:</span> Moderately increased (Your Stage).</li>
+<li class="flex gap-2"><span class="font-bold text-slate-900 dark:text-white">A3:</span> Severely increased.</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- Education CTA -->
+<section class="px-4 py-2">
+<button class="w-full bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+<span>Manage Your CKD Stage</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</section>
+<!-- Disclaimer -->
+<section class="p-6">
+<div class="bg-slate-100 dark:bg-slate-800/50 rounded-lg p-4 border-l-4 border-slate-300 dark:border-slate-600">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-slate-400 text-sm">warning</span>
+<p class="text-xs text-slate-500 dark:text-slate-400 leading-normal">
+<strong>Educational Purpose Only:</strong> This classification is provided for educational purposes based on KDIGO guidelines. It does not constitute medical advice or a formal diagnosis. Always consult your nephrologist for medical interpretation.
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3 flex justify-between items-center max-w-md mx-auto w-full z-50">
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">school</span>
+<span class="text-[10px] font-medium">Education</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">science</span>
+<span class="text-[10px] font-medium">Labs</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+</nav>
+</body></html>
