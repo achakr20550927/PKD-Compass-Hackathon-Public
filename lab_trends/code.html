@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PKD Compass - Lab Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .chart-gradient {
+            background: linear-gradient(180deg, rgba(19, 91, 236, 0.1) 0%, rgba(19, 91, 236, 0) 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#111318] antialiased">
+<div class="relative flex min-h-screen w-full max-w-md mx-auto flex-col bg-white dark:bg-background-dark shadow-xl overflow-x-hidden">
+<!-- Header -->
+<div class="sticky top-0 z-10 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 border-b border-primary/10 justify-between">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-primary/10 cursor-pointer">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<div class="flex flex-col items-center">
+<h2 class="text-[#111318] dark:text-white text-lg font-bold leading-tight tracking-tight">Lab Tracking</h2>
+<p class="text-xs text-primary font-medium">Last updated: Oct 24, 2023</p>
+</div>
+<div class="flex w-10 items-center justify-end">
+<button class="text-primary flex size-10 items-center justify-center rounded-full hover:bg-primary/10">
+<span class="material-symbols-outlined">calendar_today</span>
+</button>
+</div>
+</div>
+<!-- Main Content Scroll Area -->
+<div class="flex-1 overflow-y-auto pb-24">
+<!-- Filter Tabs -->
+<div class="px-4 py-4">
+<div class="flex h-11 items-center justify-center rounded-xl bg-primary/5 p-1.5">
+<button class="flex h-full flex-1 items-center justify-center rounded-lg text-sm font-semibold transition-all text-primary/60 hover:text-primary">3m</button>
+<button class="flex h-full flex-1 items-center justify-center rounded-lg bg-white dark:bg-primary shadow-sm text-sm font-bold text-primary dark:text-white">6m</button>
+<button class="flex h-full flex-1 items-center justify-center rounded-lg text-sm font-semibold transition-all text-primary/60 hover:text-primary">1y</button>
+</div>
+</div>
+<!-- Primary Metric: eGFR Chart Section -->
+<div class="px-4 pb-6">
+<div class="bg-primary/5 rounded-2xl p-5 border border-primary/10">
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-semibold text-primary/70 uppercase tracking-wider">Estimated GFR</span>
+<div class="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full text-xs font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>Stable</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2 mb-6">
+<h1 class="text-4xl font-bold text-[#111318] dark:text-white">62</h1>
+<span class="text-sm text-primary/60 font-medium">mL/min/1.73m²</span>
+</div>
+<!-- Chart Visualization -->
+<div class="relative h-48 w-full mt-4">
+<!-- Reference Range Shading (eGFR > 60) -->
+<div class="absolute inset-0 bg-emerald-500/5 border-t border-emerald-500/20 top-0 h-1/2 rounded-t-lg" title="Optimal Range"></div>
+<div class="absolute left-0 right-0 top-1/2 border-t border-dashed border-primary/20"></div>
+<svg class="absolute inset-0 h-full w-full overflow-visible" preserveaspectratio="none" viewbox="0 0 400 150">
+<!-- Area Fill -->
+<path d="M0 110 Q 50 100, 100 80 T 200 60 T 300 45 T 400 40 V 150 H 0 Z" fill="url(#chartGradient)" opacity="0.4"></path>
+<!-- Main Line -->
+<path d="M0 110 Q 50 100, 100 80 T 200 60 T 300 45 T 400 40" fill="none" stroke="#135bec" stroke-linecap="round" stroke-width="4"></path>
+<!-- Data Points -->
+<circle cx="100" cy="80" fill="#135bec" r="5" stroke="white" stroke-width="2"></circle>
+<circle cx="200" cy="60" fill="#135bec" r="5" stroke="white" stroke-width="2"></circle>
+<circle cx="300" cy="45" fill="#135bec" r="5" stroke="white" stroke-width="2"></circle>
+<circle cx="400" cy="40" fill="#135bec" r="6" stroke="white" stroke-width="3"></circle>
+<defs>
+<lineargradient id="chartGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#135bec"></stop>
+<stop offset="100%" stop-color="#135bec" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+</svg>
+<!-- Tooltip Example -->
+<div class="absolute top-2 right-0 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg transform -translate-y-full">
+                            Latest: 62
+                        </div>
+</div>
+<div class="flex justify-between mt-4">
+<span class="text-[10px] font-bold text-primary/40 uppercase">May</span>
+<span class="text-[10px] font-bold text-primary/40 uppercase">Jun</span>
+<span class="text-[10px] font-bold text-primary/40 uppercase">Jul</span>
+<span class="text-[10px] font-bold text-primary/40 uppercase">Aug</span>
+<span class="text-[10px] font-bold text-primary/40 uppercase">Sep</span>
+<span class="text-[10px] font-bold text-primary uppercase text-primary font-black">Oct</span>
+</div>
+</div>
+</div>
+<!-- Summary Metric Cards -->
+<div class="px-4 grid grid-cols-3 gap-3 mb-8">
+<div class="bg-white border border-primary/10 rounded-xl p-3 shadow-sm">
+<p class="text-[10px] font-bold text-primary/60 uppercase mb-1">Creatinine</p>
+<p class="text-lg font-bold">1.21</p>
+<p class="text-[10px] text-emerald-600 font-medium">Normal</p>
+</div>
+<div class="bg-white border border-orange-200 rounded-xl p-3 shadow-sm">
+<p class="text-[10px] font-bold text-primary/60 uppercase mb-1">BUN</p>
+<p class="text-lg font-bold">24</p>
+<p class="text-[10px] text-orange-600 font-medium">High</p>
+</div>
+<div class="bg-white border border-primary/10 rounded-xl p-3 shadow-sm">
+<p class="text-[10px] font-bold text-primary/60 uppercase mb-1">uACR</p>
+<p class="text-lg font-bold">18</p>
+<p class="text-[10px] text-emerald-600 font-medium">Normal</p>
+</div>
+</div>
+<!-- Recent Lab Entries List -->
+<div class="px-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-base font-bold text-[#111318] dark:text-white">Recent Lab Results</h3>
+<button class="text-primary text-xs font-bold hover:underline">View All</button>
+</div>
+<div class="space-y-3">
+<!-- Item 1: Attention State -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-background-dark/40 border-l-4 border-orange-500 rounded-lg shadow-sm border border-primary/5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#111318] dark:text-white">BUN (Blood Urea Nitrogen)</span>
+<span class="text-xs text-primary/50">Oct 24, 2023 • Fasting</span>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-orange-600">24 <span class="text-[10px] font-normal text-primary/40 ml-0.5">mg/dL</span></p>
+<span class="inline-block px-2 py-0.5 bg-orange-100 text-orange-700 text-[9px] font-bold rounded-full uppercase">Attention</span>
+</div>
+</div>
+<!-- Item 2: Normal State -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-background-dark/40 border-l-4 border-emerald-500 rounded-lg shadow-sm border border-primary/5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#111318] dark:text-white">Serum Creatinine</span>
+<span class="text-xs text-primary/50">Oct 24, 2023 • LabCorp</span>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-emerald-600">1.21 <span class="text-[10px] font-normal text-primary/40 ml-0.5">mg/dL</span></p>
+<span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold rounded-full uppercase">In Range</span>
+</div>
+</div>
+<!-- Item 3: Normal State -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-background-dark/40 border-l-4 border-emerald-500 rounded-lg shadow-sm border border-primary/5">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#111318] dark:text-white">uACR (Ratio)</span>
+<span class="text-xs text-primary/50">Aug 12, 2023 • Spot Urine</span>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-emerald-600">18 <span class="text-[10px] font-normal text-primary/40 ml-0.5">mg/g</span></p>
+<span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold rounded-full uppercase">In Range</span>
+</div>
+</div>
+<!-- Item 4: Normal State -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-background-dark/40 border-l-4 border-emerald-500 rounded-lg shadow-sm border border-primary/5 opacity-80">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-[#111318] dark:text-white">Potassium</span>
+<span class="text-xs text-primary/50">Aug 12, 2023 • Basic Panel</span>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-emerald-600">4.2 <span class="text-[10px] font-normal text-primary/40 ml-0.5">mmol/L</span></p>
+<span class="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-bold rounded-full uppercase">In Range</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-xl hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-t border-primary/10">
+<div class="flex items-center justify-around h-20 px-4">
+<a class="flex flex-col items-center gap-1 text-primary/40 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Home</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<div class="relative">
+<span class="material-symbols-outlined !fill-1">lab_profile</span>
+<div class="absolute -top-1 -right-1 size-2 bg-orange-500 rounded-full border-2 border-white"></div>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest">Labs</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary/40 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Trends</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary/40 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Profile</p>
+</a>
+</div>
+</div>
+</div>
+</body></html>
