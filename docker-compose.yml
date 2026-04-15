@@ -7,7 +7,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://pkd:pkd_password@db:5432/pkd_compass?schema=public
+      - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=production
     depends_on:
       - db
@@ -16,9 +16,9 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_USER: pkd
-      POSTGRES_PASSWORD: pkd_password
-      POSTGRES_DB: pkd_compass
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
