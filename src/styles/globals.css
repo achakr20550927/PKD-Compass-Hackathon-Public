@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap');
+
+/* =============================================
+   DESIGN TOKENS
+   ============================================= */
+@theme {
+  --color-primary: #4F80FF;
+  --color-primary-dark: #3563E9;
+  --color-background-light: #F0F4FF;
+  --color-background-dark: #0A0E1A;
+  --color-surface-light: #FFFFFF;
+  --color-surface-dark: #131929;
+  --color-card-dark: #1A2035;
+  --color-text-main: #0F172A;
+  --color-text-muted: #64748B;
+  --color-border-light: rgba(79, 128, 255, 0.1);
+  --color-border-dark: rgba(79, 128, 255, 0.08);
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+}
+
+/* =============================================
+   BASE STYLES
+   ============================================= */
+body {
+  font-family: 'Lexend', sans-serif;
+  @apply bg-background-light text-text-main dark:bg-background-dark dark:text-slate-100;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =============================================
+   KEYFRAME ANIMATIONS
+   ============================================= */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79, 128, 255, 0.4); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 10px rgba(79, 128, 255, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79, 128, 255, 0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================
+   ANIMATION UTILITIES
+   ============================================= */
+.animate-fade-up   { animation: fade-up 0.5s ease forwards; }
+.animate-scale-in  { animation: scale-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.animate-float     { animation: float 4s ease-in-out infinite; }
+.animate-slide-up  { animation: slide-up 0.4s ease forwards; }
+
+/* =============================================
+   COMPONENT UTILITIES
+   ============================================= */
+@layer components {
+
+  /* Glass morphism surface */
+  .glass {
+    @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/30 dark:border-white/5;
+  }
+
+  /* Premium card */
+  .card {
+    @apply bg-white dark:bg-card-dark rounded-2xl shadow-sm border border-blue-50 dark:border-white/5 transition-all duration-200;
+  }
+
+  /* Hero gradient card */
+  .card-hero {
+    background: linear-gradient(135deg, #4F80FF 0%, #6366F1 60%, #8B5CF6 100%);
+    @apply rounded-2xl shadow-xl text-white;
+  }
+
+  .card-hero-warm {
+    background: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+    @apply rounded-2xl shadow-xl text-white;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark active:scale-95 text-white font-bold rounded-2xl transition-all
+           shadow-[0_8px_24px_rgba(79,128,255,0.35)] flex items-center justify-center gap-2;
+  }
+
+  /* Outline button */
+  .btn-outline {
+    @apply border border-blue-100 dark:border-white/10 bg-white dark:bg-card-dark
+           hover:bg-blue-50 dark:hover:bg-white/5 text-text-main dark:text-slate-200
+           font-semibold rounded-2xl transition-all flex items-center justify-center gap-2;
+  }
+
+  /* Input field */
+  .input {
+    @apply bg-blue-50/60 dark:bg-white/5 border-2 border-blue-100 dark:border-white/10
+           rounded-2xl px-4 font-medium text-text-main dark:text-slate-100
+           placeholder:text-slate-400 focus:border-primary dark:focus:border-primary
+           focus:ring-4 focus:ring-primary/10 outline-none transition-all;
+  }
+
+  /* Section label */
+  .label {
+    @apply text-[10px] font-bold text-text-muted uppercase tracking-widest;
+  }
+
+  /* Metric badge */
+  .badge-success {
+    @apply flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-full text-xs font-bold;
+  }
+
+  .badge-warning {
+    @apply flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-full text-xs font-bold;
+  }
+
+  .badge-danger {
+    @apply flex items-center gap-1 px-2.5 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-full text-xs font-bold;
+  }
+
+  /* Bottom nav item */
+  .nav-item {
+    @apply flex flex-col items-center gap-1 transition-all duration-200;
+  }
+}
+
+/* =============================================
+   MATERIAL SYMBOLS
+   ============================================= */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  @apply select-none;
+}
+
+.fill-1 {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* =============================================
+   SCROLLBAR UTILITIES
+   ============================================= */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* =============================================
+   RANGE INPUT STYLING
+   ============================================= */
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #4F80FF;
+  box-shadow: 0 2px 8px rgba(79, 128, 255, 0.5);
+  cursor: pointer;
+  border: 3px solid white;
+  transition: transform 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* =============================================
+   GRADIENT TEXT UTILITY
+   ============================================= */
+.text-gradient {
+  background: linear-gradient(135deg, #4F80FF, #8B5CF6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* =============================================
+   GLOW UTILITIES
+   ============================================= */
+.glow-primary {
+  box-shadow: 0 0 30px rgba(79, 128, 255, 0.4), 0 8px 24px rgba(79, 128, 255, 0.2);
+}
+
+.glow-primary-sm {
+  box-shadow: 0 4px 16px rgba(79, 128, 255, 0.3);
+}
