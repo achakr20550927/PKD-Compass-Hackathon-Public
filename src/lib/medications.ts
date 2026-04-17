@@ -1,0 +1,16 @@
+export const MEDICATIONS_DB = [
+    { name: "Tolvaptan", brand: "Jynarque", class: "Vasopressin V2-receptor antagonist", indications: ["PKD"] },
+    { name: "Lisinopril", brand: "Prinivil", class: "ACE Inhibitor", indications: ["Blood Pressure"] },
+    { name: "Valsartan", brand: "Diovan", class: "ARB", indications: ["Blood Pressure"] },
+    { name: "Losartan", brand: "Cozaar", class: "ARB", indications: ["Blood Pressure"] },
+    { name: "Amlodipine", brand: "Norvasc", class: "Calcium Channel Blocker", indications: ["Blood Pressure"] },
+    { name: "Furosemide", brand: "Lasix", class: "Diuretic", indications: ["Fluid Retention"] },
+    { name: "Metoprolol", brand: "Lopressor", class: "Beta Blocker", indications: ["Blood Pressure"] },
+    { name: "Calcium Acetate", brand: "PhosLo", class: "Phosphate Binder", indications: ["Phosphorus Control"] },
+    { name: "Sevelamer Carbonate", brand: "Renvela", class: "Phosphate Binder", indications: ["Phosphorus Control"] },
+    { name: "Epoetin alfa", brand: "Epogen", class: "ESA", indications: ["Anemia"] },
+    { name: "Darbepoetin alfa", brand: "Aranesp", class: "ESA", indications: ["Anemia"] },
+    { name: "Prednisone", brand: "Deltasone", class: "Corticosteroid", indications: ["Immune Management"] },
+    { name: "Prograf", brand: "Tacrolimus", class: "Immunosuppressant", indications: ["Transplant"] },
+    { name: "CellCept", brand: "Mycophenolate", class: "Immunosuppressant", indications: ["Transplant"] },
+];
